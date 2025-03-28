@@ -1,4 +1,4 @@
-wo// background.js
+// background.js
 
 // 拡張機能アイコンクリック時の処理
 chrome.action.onClicked.addListener(async (tab) => {

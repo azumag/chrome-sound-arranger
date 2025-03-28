@@ -21,23 +21,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         chrome.runtime.sendMessage({ type: 'error', tabId: message.tabId, error: "Missing streamId in start-processing message" });
         return true; // エラーを通知したので true
       }
-      await startAudioProcessing(message.tabId, message.streamId); // streamId を渡す
+      await startAudioProcessing(message.tabId, message.streamId, message.settings); // streamId を渡す
       break;
     case 'stop-processing':
       await stopAudioProcessing(message.tabId);
       break;
-    default:
-      console.warn("Unknown message type received:", message.type);
-  }
-  // 非同期処理があるので true を返すか、sendResponse を非同期で呼ぶ
-  return true; // Indicate that the response will be sent asynchronously
-});
-
-// バックグラウンドから update-settings メッセージを受信したときの処理を追加
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    if (message.target !== 'offscreen') return false;
-
-    if (message.type === 'update-settings') {
+    case 'update-settings':
         console.log('Received settings update in offscreen:', message.settings);
         const resources = audioResources.get(message.tabId);
         if (resources) {
@@ -47,11 +36,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         }
         // ここでは応答不要
         return false; // 同期的に完了
-    }
-    // 他のメッセージタイプは上のリスナーで処理されるので、ここでは何もしない
-    return false;
+    default:
+      console.warn("Unknown message type received:", message.type);
+  }
+  // 非同期処理があるので true を返すか、sendResponse を非同期で呼ぶ
+  return true; // Indicate that the response will be sent asynchronously
 });
-
 
 // 音声処理を開始する関数 (streamId と settings を受け取るように変更)
 async function startAudioProcessing(tabId, streamId, initialSettings) {
@@ -279,6 +269,3 @@ function applySettings(resources, settings) {
     compressor.release.setTargetAtTime(0.25, now, rampTime);
   }
 }
-
-
-console.log("Offscreen script loaded.");
