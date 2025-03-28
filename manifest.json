@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Voice Enhance Filter",
+  "version": "1.0",
+  "description": "Apply voice enhancement, noise cancellation, and normalization filters to the audio playing in the current tab.",
+  "permissions": [
+    "tabCapture",
+    "activeTab",
+    "scripting",
+    "offscreen"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
