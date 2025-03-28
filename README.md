@@ -1,5 +1,7 @@
 # Tab Audio Arranger
 
+これは実験的プロトタイプです。
+
 Tab Audio Arranger is a Chrome extension designed to arrange audio in the current tab. It provides features like noise cancellation, audio normalization, and equalizer adjustments.
 
 ## Features
