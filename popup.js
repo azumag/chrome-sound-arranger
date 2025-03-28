@@ -5,12 +5,14 @@ const toggleButton = document.getElementById('toggleButton');
 const statusDiv = document.getElementById('status');
 const noiseCancelCheckbox = document.getElementById('noiseCancelCheckbox');
 const normalizeCheckbox = document.getElementById('normalizeCheckbox');
-const eqLowSlider = document.getElementById('eqLowSlider');
-const eqLowValueSpan = document.getElementById('eqLowValue');
-const eqMidSlider = document.getElementById('eqMidSlider');
-const eqMidValueSpan = document.getElementById('eqMidValue');
-const eqHighSlider = document.getElementById('eqHighSlider');
-const eqHighValueSpan = document.getElementById('eqHighValue');
+
+const eqSliders = [];
+const eqValueSpans = [];
+
+for (let i = 1; i <= 10; i++) {
+  eqSliders.push(document.getElementById(`eq${i}Slider`));
+  eqValueSpans.push(document.getElementById(`eq${i}Value`));
+}
 
 // Store current tab ID
 let currentTabId = null;
@@ -91,13 +93,15 @@ normalizeCheckbox.addEventListener('change', () => {
 });
 
 // EQ Sliders
-eqLowSlider.addEventListener('input', () => updateEqValue('Low', eqLowSlider, eqLowValueSpan));
-eqMidSlider.addEventListener('input', () => updateEqValue('Mid', eqMidSlider, eqMidValueSpan));
-eqHighSlider.addEventListener('input', () => updateEqValue('High', eqHighSlider, eqHighValueSpan));
+const eqFrequencies = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]; // Hz
+for (let i = 0; i < 10; i++) {
+  const slider = eqSliders[i];
+  const valueSpan = eqValueSpans[i];
+  const frequency = eqFrequencies[i];
 
-eqLowSlider.addEventListener('change', () => sendEqUpdate('eqLowGain', eqLowSlider.value));
-eqMidSlider.addEventListener('change', () => sendEqUpdate('eqMidGain', eqMidSlider.value));
-eqHighSlider.addEventListener('change', () => sendEqUpdate('eqHighGain', eqHighSlider.value));
+  slider.addEventListener('input', () => updateEqValue(frequency, slider, valueSpan));
+  slider.addEventListener('change', () => sendEqUpdate(`eq${i + 1}Gain`, slider.value));
+}
 
 // --- UI Update Functions ---
 // Updates the main toggle button and status text, enables/disables settings controls
@@ -138,9 +142,7 @@ function updateUI(status) {
   // Enable/disable settings controls based on filter status
   noiseCancelCheckbox.disabled = !settingsEnabled;
   normalizeCheckbox.disabled = !settingsEnabled;
-  eqLowSlider.disabled = !settingsEnabled;
-  eqMidSlider.disabled = !settingsEnabled;
-  eqHighSlider.disabled = !settingsEnabled;
+  eqSliders.forEach(slider => slider.disabled = !settingsEnabled);
 }
 
 // Updates the checkboxes and sliders based on settings received from background
@@ -149,9 +151,12 @@ function updateSettingsUI(settings) {
   noiseCancelCheckbox.checked = settings.noiseCancelEnabled ?? false; // Default to false if undefined
   normalizeCheckbox.checked = settings.normalizeEnabled ?? false; // Default to false if undefined
 
-  updateSliderUI(eqLowSlider, eqLowValueSpan, settings.eqLowGain ?? 0);
-  updateSliderUI(eqMidSlider, eqMidValueSpan, settings.eqMidGain ?? 0);
-  updateSliderUI(eqHighSlider, eqHighValueSpan, settings.eqHighGain ?? 0);
+  for (let i = 0; i < 10; i++) {
+    const slider = eqSliders[i];
+    const valueSpan = eqValueSpans[i];
+    const gainKey = `eq${i + 1}Gain`;
+    updateSliderUI(slider, valueSpan, settings[gainKey] ?? 0);
+  }
 }
 
 // Helper to update a single slider and its value display
@@ -162,7 +167,7 @@ function updateSliderUI(slider, valueSpan, value) {
 }
 
 // Updates the EQ value display in real-time as the slider moves
-function updateEqValue(band, slider, valueSpan) {
+function updateEqValue(frequency, slider, valueSpan) {
   valueSpan.textContent = `${slider.value} dB`;
 }
 
@@ -253,9 +258,7 @@ function handleError(message, revertStatus = null) {
   // Optionally disable settings controls on error too
   noiseCancelCheckbox.disabled = true;
   normalizeCheckbox.disabled = true;
-  eqLowSlider.disabled = true;
-  eqMidSlider.disabled = true;
-  eqHighSlider.disabled = true;
+  eqSliders.forEach(slider => slider.disabled = true);
 }
 
 

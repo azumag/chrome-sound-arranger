@@ -90,32 +90,28 @@ async function startAudioProcessing(tabId, streamId, initialSettings) {
     lowpassFilter.frequency.value = 4000; // カットオフ周波数 (音声帯域より少し上)
     lowpassFilter.gain.value = 0;
 
-    // イコライザー (3バンド Peaking Filter)
-    const eqLow = audioContext.createBiquadFilter();
-    eqLow.type = "peaking";
-    eqLow.frequency.value = 100; // 低音域の中心周波数 (例)
-    eqLow.Q.value = 1;           // Q値 (帯域幅)
-    eqLow.gain.value = 0;        // 初期ゲイン (dB) - 後で調整可能にする
-
-    const eqMid = audioContext.createBiquadFilter();
-    eqMid.type = "peaking";
-    eqMid.frequency.value = 1000; // 中音域の中心周波数 (例)
-    eqMid.Q.value = 1;
-    eqMid.gain.value = 0;
-
-    const eqHigh = audioContext.createBiquadFilter();
-    eqHigh.type = "peaking";
-    eqHigh.frequency.value = 5000; // 高音域の中心周波数 (例)
-    eqHigh.Q.value = 1;
-    eqHigh.gain.value = 0;
-
-    // DynamicsCompressorNode (ノーマライゼーション)
-    const compressor = audioContext.createDynamicsCompressor();
-    compressor.threshold.value = -24;
-    compressor.knee.value = 30;
-    compressor.ratio.value = 12;
-    compressor.attack.value = 0.003;
-    compressor.release.value = 0.25;
+    // イコライザー (10バンド Peaking Filter)
+    const eqBands = [];
+    const eqFrequencies = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]; // Hz
+    for (let i = 0; i < 10; i++) {
+      const eq = audioContext.createBiquadFilter();
+        eq.type = "peaking";
+        eq.frequency.value = eqFrequencies[i];
+        eq.Q.value = 1;
+        eq.gain.value = 0;
+        eqBands.push(eq);
+      }
+      const eqLow = eqBands[0];
+      const eqMid = eqBands[1];
+      const eqHigh = eqBands[2];
+  
+      // DynamicsCompressorNode (ノーマライゼーション)
+      const compressor = audioContext.createDynamicsCompressor();
+      compressor.threshold.value = -24;
+      compressor.knee.value = 30;
+      compressor.ratio.value = 12;
+      compressor.attack.value = 0.003;
+      compressor.release.value = 0.25;
 
     // GainNode (最終的な音量調整)
     const gainNode = audioContext.createGain();
@@ -125,10 +121,10 @@ async function startAudioProcessing(tabId, streamId, initialSettings) {
     sourceNode.connect(notchFilter);
     notchFilter.connect(bandpassFilter);
     bandpassFilter.connect(lowpassFilter);
-    lowpassFilter.connect(eqLow); // lowpass の出力を eqLow へ
-    eqLow.connect(eqMid);         // eqLow の出力を eqMid へ
-    eqMid.connect(eqHigh);        // eqMid の出力を eqHigh へ
-    eqHigh.connect(compressor);   // eqHigh の出力を compressor へ
+    lowpassFilter.connect(eqBands[0]); // lowpass の出力を eqLow へ
+    eqBands[0].connect(eqBands[1]);         // eqLow の出力を eqMid へ
+    eqBands[1].connect(eqBands[2]);        // eqMid の出力を eqHigh へ
+    eqBands[2].connect(compressor);   // eqHigh の出力を compressor へ
     compressor.connect(gainNode);
     gainNode.connect(audioContext.destination);
     // ---------------------------------
@@ -141,14 +137,12 @@ async function startAudioProcessing(tabId, streamId, initialSettings) {
       notchFilter: notchFilter,
       bandpassFilter: bandpassFilter,
       lowpassFilter: lowpassFilter,
-      eqLow: eqLow,
-      eqMid: eqMid,
-      eqHigh: eqHigh,
+      eqBands: eqBands,
       compressor: compressor,
       outputNode: gainNode // 最後のノード
     };
 
-    // 初期設定を適用
+     // 初期設定を適用
     applySettings(resources, initialSettings);
 
     // リソースをMapに保存
@@ -216,7 +210,7 @@ async function stopAudioProcessing(tabId) {
 
 // 設定をオーディオノードに適用する関数
 function applySettings(resources, settings) {
-  const { audioContext, notchFilter, bandpassFilter, lowpassFilter, eqLow, eqMid, eqHigh, compressor } = resources;
+  const { audioContext, notchFilter, bandpassFilter, lowpassFilter, compressor, eqBands } = resources;
   const now = audioContext.currentTime;
   const rampTime = 0.1; // パラメータ変更を滑らかにする時間 (秒)
 
@@ -247,13 +241,16 @@ function applySettings(resources, settings) {
 
   // --- Equalizer ---
   // gain は AudioParam なので setTargetAtTime を使う
-  eqLow.gain.setTargetAtTime(settings.eqLowGain ?? 0, now, rampTime);
-  eqMid.gain.setTargetAtTime(settings.eqMidGain ?? 0, now, rampTime);
-  eqHigh.gain.setTargetAtTime(settings.eqHighGain ?? 0, now, rampTime);
+  const eqFrequencies = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]; // Hz
+  for (let i = 0; i < 10; i++) {
+    const eq = eqBands[i];
+    const gainKey = `eq${i + 1}Gain`;
+    eq.gain.setTargetAtTime(settings[gainKey] ?? 0, now, rampTime);
+  }
 
-  // --- Normalization (Compressor) ---
-  if (settings.normalizeEnabled) {
-    // 有効時のパラメータ設定
+// --- Normalization (Compressor) ---
+if (settings.normalizeEnabled) {
+  // 有効時のパラメータ設定
     compressor.threshold.setTargetAtTime(-24, now, rampTime);
     compressor.knee.setTargetAtTime(30, now, rampTime);
     compressor.ratio.setTargetAtTime(12, now, rampTime);

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Voice Enhance Filter</title>
+  <title>Tab Audio Arranger</title>
   <style>
     body {
       width: 200px;
@@ -31,7 +31,7 @@
   </style>
 </head>
 <body>
-  <h3>Voice Enhance Filter</h3>
+  <h3>Tab Audio Arranger</h3>
   <button id="toggleButton">Loading...</button>
   <div id="status">Checking status...</div>
 
@@ -50,19 +50,54 @@
 
   <h4>Equalizer</h4>
   <div>
-    <label for="eqLowSlider">Low:</label>
-    <input type="range" id="eqLowSlider" min="-15" max="15" value="0" step="1" disabled>
-    <span id="eqLowValue">0 dB</span>
+    <label for="eq1Slider">31 Hz:</label>
+    <input type="range" id="eq1Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq1Value">0 dB</span>
   </div>
   <div>
-    <label for="eqMidSlider">Mid:</label>
-    <input type="range" id="eqMidSlider" min="-15" max="15" value="0" step="1" disabled>
-    <span id="eqMidValue">0 dB</span>
+    <label for="eq2Slider">62 Hz:</label>
+    <input type="range" id="eq2Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq2Value">0 dB</span>
   </div>
   <div>
-    <label for="eqHighSlider">High:</label>
-    <input type="range" id="eqHighSlider" min="-15" max="15" value="0" step="1" disabled>
-    <span id="eqHighValue">0 dB</span>
+    <label for="eq3Slider">125 Hz:</label>
+    <input type="range" id="eq3Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq3Value">0 dB</span>
+  </div>
+  <div>
+    <label for="eq4Slider">250 Hz:</label>
+    <input type="range" id="eq4Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq4Value">0 dB</span>
+  </div>
+  <div>
+    <label for="eq5Slider">500 Hz:</label>
+    <input type="range" id="eq5Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq5Value">0 dB</span>
+  </div>
+  <div>
+    <label for="eq6Slider">1 kHz:</label>
+    <input type="range" id="eq6Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq6Value">0 dB</span>
+  </div>
+  <div>
+    <label for="eq7Slider">2 kHz:</label>
+    <input type="range" id="eq7Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq7Value">0 dB</span>
+  </div>
+  <div>
+    <label for="eq8Slider">4 kHz:</label>
+    <input type="range" id="eq8Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq8Value">0 dB</span>
+  </div>
+  <div>
+    <label for="eq9Slider">8 kHz:</label>
+    <input type="range" id="eq9Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq9Value">0 dB</span>
+  </div>
+  <div>
+    <label for="eq10Slider">16 kHz:</label>
+    <input type="range" id="eq10Slider" min="-15" max="15" value="0" step="1" disabled>
+    <span id="eq10Value">0 dB</span>
   </div>
 
   <script src="popup.js"></script>
