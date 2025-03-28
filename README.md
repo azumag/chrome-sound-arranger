@@ -1,6 +1,6 @@
-# Voice Enhance Chrome Extension
+# Tab Audio Arranger
 
-Voice Enhance is a Chrome extension designed to improve audio quality during media playback or communication. It provides features like noise cancellation, audio normalization, and equalizer adjustments.
+Tab Audio Arranger is a Chrome extension designed to arrange audio in the current tab. It provides features like noise cancellation, audio normalization, and equalizer adjustments.
 
 ## Features
 

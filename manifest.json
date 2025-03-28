@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Voice Enhance Filter",
+  "name": "Tab Audio Arranger",
   "version": "1.0",
-  "description": "Apply voice enhancement, noise cancellation, and normalization filters to the audio playing in the current tab.",
+  "description": "Apply noise cancellation, normalization, and equalizer filters to the audio playing in the current tab.",
   "permissions": [
     "tabCapture",
     "activeTab",
