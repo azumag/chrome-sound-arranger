@@ -216,41 +216,31 @@ function applySettings(resources, settings) {
 
   console.log("Applying settings:", settings);
 
+  // --- Voice Enhancement ---
+  if (settings.voiceEnhancementEnabled) {
+    // バンドパスフィルター (音声帯域強調)
+    bandpassFilter.frequency.setTargetAtTime(2000, now, rampTime); // 中心周波数 (調整が必要)
+    bandpassFilter.Q.setTargetAtTime(0.8, now, rampTime);
+  } else {
+    bandpassFilter.frequency.setTargetAtTime(10, now, rampTime);
+    bandpassFilter.Q.setTargetAtTime(0.01, now, rampTime);
+  }
+
   // --- Noise Cancellation ---
   if (settings.noiseCancelEnabled) {
     // 有効時のパラメータ設定 (必要に応じて調整)
-    notchFilter.frequency.setTargetAtTime(60, now, rampTime); // 60Hz notch
+    notchFilter.frequency.setTargetAtTime(50, now, rampTime); // 50Hz notch
     notchFilter.Q.setTargetAtTime(10, now, rampTime);
-    bandpassFilter.frequency.setTargetAtTime(1850, now, rampTime); // Voice bandpass center
-    bandpassFilter.Q.setTargetAtTime(0.8, now, rampTime);
-    lowpassFilter.frequency.setTargetAtTime(4000, now, rampTime); // Cut high freq noise
-    lowpassFilter.type = "lowpass"; // 念のためタイプを再設定
   } else {
     // 無効時のパラメータ設定 (効果をなくす)
     // ノッチフィルター: 可聴域外に移動
     notchFilter.frequency.setTargetAtTime(10, now, rampTime); // Move notch out of audible range
     notchFilter.Q.setTargetAtTime(0.01, now, rampTime); // Make it very broad (ineffective)
-    // バンドパスフィルター: ゲインを0にするか、タイプをallpassにする (allpassは位相を変えるので注意)
-    // ここでは周波数を可聴域外に飛ばし、Qを低くして影響を最小限に
-    bandpassFilter.frequency.setTargetAtTime(10, now, rampTime);
-    bandpassFilter.Q.setTargetAtTime(0.01, now, rampTime);
-    // ローパスフィルター: カットオフ周波数を非常に高くする
-    lowpassFilter.frequency.setTargetAtTime(audioContext.sampleRate / 2 - 1, now, rampTime); // Nyquist freq
-    // lowpassFilter.type = "allpass"; // allpass にすると位相が変わる可能性
   }
 
-  // --- Equalizer ---
-  // gain は AudioParam なので setTargetAtTime を使う
-  const eqFrequencies = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]; // Hz
-  for (let i = 0; i < 10; i++) {
-    const eq = eqBands[i];
-    const gainKey = `eq${i + 1}Gain`;
-    eq.gain.setTargetAtTime(settings[gainKey] ?? 0, now, rampTime);
-  }
-
-// --- Normalization (Compressor) ---
-if (settings.normalizeEnabled) {
-  // 有効時のパラメータ設定
+  // --- Normalization (Compressor) ---
+  if (settings.normalizeEnabled) {
+    // 有効時のパラメータ設定
     compressor.threshold.setTargetAtTime(-24, now, rampTime);
     compressor.knee.setTargetAtTime(30, now, rampTime);
     compressor.ratio.setTargetAtTime(12, now, rampTime);
@@ -264,5 +254,14 @@ if (settings.normalizeEnabled) {
     // attack/release は影響が少なくなるが、念のためデフォルトに近い値に
     compressor.attack.setTargetAtTime(0.003, now, rampTime);
     compressor.release.setTargetAtTime(0.25, now, rampTime);
+  }
+
+  // --- Equalizer ---
+  // gain は AudioParam なので setTargetAtTime を使う
+  const eqFrequencies = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000]; // Hz
+  for (let i = 0; i < 10; i++) {
+    const eq = eqBands[i];
+    const gainKey = `eq${i + 1}Gain`;
+    eq.gain.setTargetAtTime(settings[gainKey] ?? 0, now, rampTime);
   }
 }

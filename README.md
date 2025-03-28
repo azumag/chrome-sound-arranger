@@ -2,10 +2,13 @@
 
 これは実験的プロトタイプです。
 
+この拡張機能は実験的なプロトタイプであり、音質改善のために様々なパラメータが調整されています。
+
 Tab Audio Arranger is a Chrome extension designed to arrange audio in the current tab. It provides features like noise cancellation, audio normalization, and equalizer adjustments.
 
 ## Features
 
+- **Voice Enhancement**: Enhances voice clarity by adjusting the audio frequency.
 - **Noise Cancellation**: Reduce background noise for clearer audio.
 - **Audio Normalization**: Maintain consistent audio levels.
 - **Equalizer**: Adjust low, mid, and high frequencies to your preference.
@@ -22,7 +25,10 @@ Tab Audio Arranger is a Chrome extension designed to arrange audio in the curren
 1. Click the extension icon in the Chrome toolbar.
 2. Use the popup interface to:
    - Start or stop audio processing for the current tab.
-   - Adjust audio settings like noise cancellation, normalization, and equalizer levels.
+   - Adjust audio settings like voice enhancement, noise cancellation, normalization, and equalizer levels.
+
+**注意**: Voice enhancement、ノイズキャンセリング、ノーマライゼーションは独立したスイッチとして機能するように修正されました。Voice enhancement は単純に声を聞こえやすくする機能として実装し直されました。`popup.html`ファイルに`voiceEnhancementCheckbox`が追加されました。
+
 3. The extension will process audio in the background using an offscreen document.
 
 ## Development

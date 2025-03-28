@@ -78,17 +78,10 @@ toggleButton.addEventListener('click', async () => {
     });
 });
 
-// Noise Cancellation Checkbox
-noiseCancelCheckbox.addEventListener('change', () => {
+// Voice Enhancement Checkbox
+voiceEnhancementCheckbox.addEventListener('change', () => {
   if (!currentTabId) return;
-  const newSettings = { ...currentSettings, noiseCancelEnabled: noiseCancelCheckbox.checked };
-  sendSettingsUpdate(newSettings);
-});
-
-// Normalization Checkbox
-normalizeCheckbox.addEventListener('change', () => {
-  if (!currentTabId) return;
-  const newSettings = { ...currentSettings, normalizeEnabled: normalizeCheckbox.checked };
+  const newSettings = { ...currentSettings, voiceEnhancementEnabled: voiceEnhancementCheckbox.checked };
   sendSettingsUpdate(newSettings);
 });
 
@@ -140,8 +133,11 @@ function updateUI(status) {
       settingsEnabled = false;
   }
   // Enable/disable settings controls based on filter status
+  voiceEnhancementCheckbox.disabled = !settingsEnabled;
   noiseCancelCheckbox.disabled = !settingsEnabled;
   normalizeCheckbox.disabled = !settingsEnabled;
+  eqSliders.forEach(slider => slider.disabled = !settingsEnabled);
+  eqSliders.forEach(slider => slider.disabled = !settingsEnabled);
   eqSliders.forEach(slider => slider.disabled = !settingsEnabled);
 }
 
