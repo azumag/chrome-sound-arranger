@@ -75,19 +75,19 @@ async function startAudioProcessing(tabId, streamId, initialSettings) {
     // ノッチフィルター (ハムノイズ除去 - 60Hzをターゲット)
     const notchFilter = audioContext.createBiquadFilter();
     notchFilter.type = "notch";
-    notchFilter.frequency.value = 60; // 60Hz (地域によっては50Hz)
+    notchFilter.frequency.value = 50; // 50Hz (地域によっては50Hz)
     notchFilter.Q.value = 10; // フィルターの鋭さ (調整が必要)
 
     // バンドパスフィルター (音声帯域強調)
     const bandpassFilter = audioContext.createBiquadFilter();
     bandpassFilter.type = "bandpass";
-    bandpassFilter.frequency.value = 1850; // 中心周波数 (300Hzと3400Hzの中間あたり)
+    bandpassFilter.frequency.value = 2000; // 中心周波数 (調整が必要)
     bandpassFilter.Q.value = 0.8; // 帯域幅 (調整が必要)
 
     // ローパスフィルター (高周波ノイズ抑制)
     const lowpassFilter = audioContext.createBiquadFilter();
     lowpassFilter.type = "lowpass";
-    lowpassFilter.frequency.value = 4000; // カットオフ周波数 (音声帯域より少し上)
+    lowpassFilter.frequency.value = 4500; // カットオフ周波数 (音声帯域より少し上)
     lowpassFilter.gain.value = 0;
 
     // イコライザー (10バンド Peaking Filter)

@@ -156,8 +156,8 @@ function updateUI(status) {
   // Enable/disable settings controls based on filter status
   const voiceEnhancementEnabled = settingsEnabled && currentSettings.voiceEnhancementEnabled;
   voiceEnhancementCheckbox.disabled = !settingsEnabled;
-  noiseCancelCheckbox.disabled = !voiceEnhancementEnabled;
-  normalizeCheckbox.disabled = !voiceEnhancementEnabled;
+  noiseCancelCheckbox.disabled = !settingsEnabled;
+  normalizeCheckbox.disabled = !settingsEnabled;
   eqSliders.forEach(slider => slider.disabled = settingsEnabled && voiceEnhancementEnabled);
 }
 
