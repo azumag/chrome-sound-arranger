@@ -34,11 +34,19 @@ const tabSettings = new Map();
 
 // デフォルトのフィルター設定
 const defaultSettings = {
+  voiceEnhancementEnabled: true, // デフォルトでボイスエンハンスを有効にするか？
   noiseCancelEnabled: true, // デフォルトでノイズキャンセルを有効にするか？
   normalizeEnabled: true,   // デフォルトでノーマライズを有効にするか？
-  eqLowGain: 0,
-  eqMidGain: 0,
-  eqHighGain: 0,
+  eq1Gain: 0,
+  eq2Gain: 0,
+  eq3Gain: 0,
+  eq4Gain: 0,
+  eq5Gain: 0,
+  eq6Gain: 0,
+  eq7Gain: 0,
+  eq8Gain: 0,
+  eq9Gain: 0,
+  eq10Gain: 0,
 };
 
 // 指定されたタブの設定を取得する関数 (なければデフォルトを返す)

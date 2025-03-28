@@ -3,6 +3,7 @@
 // --- DOM Element References ---
 const toggleButton = document.getElementById('toggleButton');
 const statusDiv = document.getElementById('status');
+const voiceEnhancementCheckbox = document.getElementById('voiceEnhancementCheckbox');
 const noiseCancelCheckbox = document.getElementById('noiseCancelCheckbox');
 const normalizeCheckbox = document.getElementById('normalizeCheckbox');
 
@@ -78,6 +79,19 @@ toggleButton.addEventListener('click', async () => {
     });
 });
 
+// Voice Enhancement Checkbox
+voiceEnhancementCheckbox.addEventListener('change', () => {
+  if (!currentTabId) return;
+  const voiceEnhancementEnabled = voiceEnhancementCheckbox.checked;
+  const newSettings = {
+    ...currentSettings,
+    voiceEnhancementEnabled: voiceEnhancementEnabled,
+    noiseCancelEnabled: voiceEnhancementEnabled,
+    normalizeEnabled: voiceEnhancementEnabled
+  };
+  sendSettingsUpdate(newSettings);
+});
+
 // Noise Cancellation Checkbox
 noiseCancelCheckbox.addEventListener('change', () => {
   if (!currentTabId) return;
@@ -140,14 +154,17 @@ function updateUI(status) {
       settingsEnabled = false;
   }
   // Enable/disable settings controls based on filter status
+  const voiceEnhancementEnabled = settingsEnabled && currentSettings.voiceEnhancementEnabled;
+  voiceEnhancementCheckbox.disabled = !settingsEnabled;
   noiseCancelCheckbox.disabled = !settingsEnabled;
   normalizeCheckbox.disabled = !settingsEnabled;
-  eqSliders.forEach(slider => slider.disabled = !settingsEnabled);
+  eqSliders.forEach(slider => slider.disabled = settingsEnabled && voiceEnhancementEnabled);
 }
 
 // Updates the checkboxes and sliders based on settings received from background
 function updateSettingsUI(settings) {
   console.log("Updating settings UI:", settings);
+  voiceEnhancementCheckbox.checked = settings.voiceEnhancementEnabled ?? true;
   noiseCancelCheckbox.checked = settings.noiseCancelEnabled ?? false; // Default to false if undefined
   normalizeCheckbox.checked = settings.normalizeEnabled ?? false; // Default to false if undefined
 
