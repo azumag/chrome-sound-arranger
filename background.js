@@ -1,5 +1,9 @@
 // background.js
 
+const capturingTabs = new Map(); // タブIDと状態を紐付けるMap
+const tabSettings = new Map();   // タブIDと設定を紐付けるMap
+
+
 // 拡張機能アイコンクリック時の処理
 chrome.action.onClicked.addListener(async (tab) => {
   console.log('Extension icon clicked on tab:', tab.id);

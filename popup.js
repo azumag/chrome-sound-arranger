@@ -300,63 +300,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   return false; // Allow other listeners to process
 });
-// --- Audio Visualizer ---
-let audioContext;
-let analyser;
-let bufferLength;
-let dataArray;
-
-function initAudioVisualizer() {
-  audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  analyser = audioContext.createAnalyser();
-  analyser.fftSize = 256;
-  bufferLength = analyser.frequencyBinCount;
-  dataArray = new Uint8Array(bufferLength);
-
-  // Get the audio source (from microphone)
-  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then(stream => {
-      const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
-      analyser.connect(audioContext.destination);
-      visualize();
-    })
-    .catch(err => {
-      console.error('Failed to get user media', err);
-    });
-}
-
-function visualize() {
-  requestAnimationFrame(visualize);
-
-  analyser.getByteFrequencyData(dataArray);
-
-  // Render the visualizer (e.g., using a canvas)
-  drawVisualizer(dataArray);
-}
-
-function drawVisualizer(dataArray) {
-  const canvas = document.getElementById('visualizerCanvas'); // Replace 'visualizerCanvas' with your canvas element's ID
-  const canvasCtx = canvas.getContext('2d');
-
-  canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-  canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-  const barWidth = (canvas.width / bufferLength) * 2.5;
-  let barHeight;
-  let x = 0;
-
-  for (let i = 0; i < bufferLength; i++) {
-    barHeight = dataArray[i];
-
-    canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
-    canvasCtx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
-
-    x += barWidth + 1;
-  }
-}
-
 // Call initAudioVisualizer when the popup is loaded
-window.addEventListener('load', initAudioVisualizer);
+window.addEventListener('load', null);
 
 console.log("Popup script loaded.");
