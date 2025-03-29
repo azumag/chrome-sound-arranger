@@ -5,50 +5,6 @@ chrome.action.onClicked.addListener(async (tab) => {
   console.log('Extension icon clicked on tab:', tab.id);
   await toggleCapture(tab.id);
 });
-
-// Offscreen Document が存在するかどうかを確認する関数
-async function hasOffscreenDocument(path) {
-  // chrome.runtime.getContexts() を使って既存の Offscreen Document を検索
-  // 注: Manifest V3 では、特定のパスを持つ Offscreen Document が存在するかどうかを直接確認する方法が推奨されている
-  // しかし、API の制限により、現在アクティブなコンテキストをフィルタリングする必要がある
-  const offscreenUrl = chrome.runtime.getURL(path);
-  try {
-    const contexts = await chrome.runtime.getContexts({
-      contextTypes: ['OFFSCREEN_DOCUMENT'],
-      documentUrls: [offscreenUrl] // このフィルタは現在 (Chrome 123時点) では完全には機能しない可能性がある
-    });
-    // contexts 配列をさらにフィルタリングする必要があるかもしれない
-    return contexts.some(context => context.documentUrl === offscreenUrl);
-  } catch (error) {
-    // getContexts が利用できない古いバージョンの Chrome も考慮 (ただし Manifest V3 なので比較的新しいはず)
-    console.warn("Could not check for existing offscreen document:", error);
-    return false;
-  }
-}
-
-
-// 音声キャプチャと処理の状態を管理する Map (キー: tabId, 値: { status: 'active' | 'inactive' | 'starting' | 'stopping' })
-const capturingTabs = new Map();
-// 各タブのフィルター設定を管理する Map (キー: tabId, 値: settingsObject)
-const tabSettings = new Map();
-
-// デフォルトのフィルター設定
-const defaultSettings = {
-  voiceEnhancementEnabled: true, // デフォルトでボイスエンハンスを有効にするか？
-  noiseCancelEnabled: true, // デフォルトでノイズキャンセルを有効にするか？
-  normalizeEnabled: true,   // デフォルトでノーマライズを有効にするか？
-  eq1Gain: 0,
-  eq2Gain: 0,
-  eq3Gain: 0,
-  eq4Gain: 0,
-  eq5Gain: 0,
-  eq6Gain: 0,
-  eq7Gain: 0,
-  eq8Gain: 0,
-  eq9Gain: 0,
-  eq10Gain: 0,
-};
-
 // 指定されたタブの設定を取得する関数 (なければデフォルトを返す)
 function getSettingsForTab(tabId) {
   return tabSettings.get(tabId) || { ...defaultSettings }; // デフォルトのコピーを返す
